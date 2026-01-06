@@ -1,4 +1,13 @@
 fastapi
 uvicorn
-langdetect
+
 pydantic
+langdetect
+
+torch
+sentence-transformers
+transformers
+scikit-learn
+numpy
+
+python-multipart
