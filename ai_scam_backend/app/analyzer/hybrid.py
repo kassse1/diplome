@@ -1,29 +1,48 @@
 from .language import detect_language
 from .rules import rule_based_analysis
-from .ml import ml_score
+from .semantic_ml import semantic_risk_score
 
 
 def analyze_text(text: str) -> dict:
     lang = detect_language(text)
 
+    # 1️⃣ RULES
     rule_score, signals = rule_based_analysis(text)
-    ml_result = ml_score(text)
 
-    critical = (
-        ("urgency" in signals and "profit" in signals) or
-        ("urgency" in signals and "money" in signals) or
-        ("profit" in signals and "money" in signals)
-    )
+    # 🔴 HARD RULE: BANK PHISHING
+    if "phishing" in signals:
+        return {
+            "language": lang,
+            "verdict": "scam",
+            "is_scam": True,
+            "confidence": 0.95,
+            "signals": signals,
+            "method": "rules (hard) + semantic AI"
+        }
 
-    if critical:
-        final_score = max(ml_result, 0.8)
+    # 2️⃣ SEMANTIC AI (ОСНОВНОЙ ИСТОЧНИК)
+    ai_score = semantic_risk_score(text)
+
+    # 3️⃣ AGGREGATION
+    risk = max(rule_score, ai_score)
+
+    # 🟡 investment всегда минимум dangerous
+    if "investment" in signals and risk < 0.35:
+        risk = 0.35
+
+    # 4️⃣ VERDICT
+    if risk >= 0.7:
+        verdict = "scam"
+    elif risk >= 0.3:
+        verdict = "dangerous"
     else:
-        final_score = rule_score * 0.4 + ml_result * 0.6
+        verdict = "safe"
 
     return {
         "language": lang,
-        "is_scam": final_score >= 0.5,
-        "confidence": round(final_score, 2),
+        "verdict": verdict,
+        "is_scam": verdict == "scam",
+        "confidence": round(risk, 2),
         "signals": signals,
-        "method": "hybrid (rules + ml)"
+        "method": "semantic AI + rules"
     }

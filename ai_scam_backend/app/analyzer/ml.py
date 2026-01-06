@@ -1,31 +1,45 @@
+from transformers import pipeline
+
+classifier = pipeline(
+    "zero-shot-classification",
+    model="joeddav/xlm-roberta-large-xnli",
+    tokenizer="joeddav/xlm-roberta-large-xnli",
+    framework="pt",
+    device=-1,
+    use_fast=False
+)
+
+SCAM_LABELS = [
+    "scam",
+    "fraud",
+    "phishing",
+    "financial scam",
+    "safe message"
+]
+
+SAFE_LABEL = "safe message"
+
+
 def ml_score(text: str) -> float:
     """
-    Language-agnostic heuristic ML stub.
-    Works across languages using intent patterns.
+    Returns probability of scam using zero-shot multilingual model.
     """
-    t = text.lower()
+    result = classifier(
+        text,
+        candidate_labels=SCAM_LABELS,
+        hypothesis_template="This message is {}."
+    )
 
-    intent_patterns = [
-        # winning / reward
-        "won", "ganado", "ganhou", "ұтып", "win",
+    labels = result["labels"]
+    scores = result["scores"]
 
-        # urgency
-        "urgent", "urgente", "шұғыл", "immediately", "agora",
+    scam_scores = []
 
-        # action pressure
-        "act now", "confirme", "confirm", "receber", "алу",
+    for label, score in zip(labels, scores):
+        if label != SAFE_LABEL:
+            scam_scores.append(score)
 
-        # money
-        "money", "dinero", "dinheiro", "доллар", "euro", "$", "€"
-    ]
+    if not scam_scores:
+        return 0.0
 
-    hits = sum(1 for p in intent_patterns if p in t)
-
-    if hits >= 3:
-        return 0.85
-    if hits == 2:
-        return 0.65
-    if hits == 1:
-        return 0.4
-
-    return 0.2
+    return round(float(max(scam_scores)), 2)
