@@ -64,7 +64,7 @@ between presentation, API, and AI logic.
                      │
                      ▼
               JSON Response
-
+##
 
 🧠 AI-подход
 
