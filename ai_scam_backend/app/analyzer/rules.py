@@ -1,29 +1,27 @@
 SCAM_PATTERNS = {
     "urgency": [
-        "urgent", "immediately", "act now", "last chance",
-        "срочно", "немедленно", "последний шанс",
-        "қазір", "шұғыл",
-        "ahora", "urgente",
-        "imediatamente"
+        "срочно", "немедленно", "прямо сейчас", "последний шанс",
+        "urgent", "urgente", "шұғыл"
     ],
     "money": [
-        "money", "payment", "transfer", "send",
-        "деньги", "перевод", "оплата",
-        "tenge", "тенге", "dollar", "usd", "$", "€"
-    ],
-    "pressure": [
-        "verify", "verification", "blocked", "suspended",
-        "подтвердите", "заблокирован", "верификация",
-        "confirmar", "bloqueado"
+        "деньги", "перевод", "оплата", "платёж", "оплатить",
+        "тенге", "руб", "доллар", "евро", "$", "€"
     ],
     "profit": [
-        "guaranteed profit", "no risk", "easy money",
-        "гарантированный доход", "без риска"
+        "вы выиграли", "выигрыш", "приз", "бонус",
+        "гарантированный доход", "без риска",
+        "won", "ganado", "ganhou", "ұтып"
+    ],
+    "pressure": [
+        "подтвердите", "верификация", "подтверждение",
+        "аккаунт будет заблокирован", "заблокирован",
+        "confirm", "verify", "blocked"
     ],
     "links": [
         "http://", "https://", "www."
     ]
 }
+
 
 def rule_based_analysis(text: str):
     text_l = text.lower()
